@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Waiter.js Demo</title>
+</head>
+<body>
+
+<h1>Event Queue</h1>
+
+<p>
+A simple JavaScript for queueing timed events.
+</p>
+<h2>Sample Usage</h2>
+<code>
+var queue = new Waiter();<br>
+queue.add_to_q("event1", 10000, function() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log("The wait is over")<br>
+});<br><br>
+
+queue.add_to_q("event2", 5000, function() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log("The wait is almost over")<br>
+});<br><br>
+
+queue.add_to_q("event3", 12000, function() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log("This event wil be cancelled")<br>
+});<br><br>
+
+queue.cancel_event("event3");
+</code>
+
+<h2>Key Methods</h2>
+
+<table border="1">
+	<thead>
+		<tr>
+			<th scope="col">Method name</th>
+			<th scope="col">Arguments</th>
+			<th scope="col">Return value</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th scope="row">add_event(time, callback, name, data)</th>
+			<td>
+			    <ul>
+				    <li>time - time in milliseconds since 1 Jan, 1970 UTC</li>
+    				<li>callback - function that gets called at the given time. the event 'name' and data are provided as args when the function is invoked</li>
+    				<li>name (optional) - a string name for the event</li>
+    				<li>data (optional) - optional data to be used in the callback function</li>
+    			</ul>
+			</td>
+			<td>boolean - value relates to whether the event is created</td>
+		</tr>
+		<tr>
+			<th scope="row">cancel_event(name)</th>
+			<td>name</td>
+			<td>Boolean - true = event was cancelled, false = event with the given name not found</td>
+		</tr>
+		<tr>
+			<th scope="row">events_in_queue()</th>
+			<td>-</td>
+			<td>Array - list of names of events in queue</td>
+		</tr>
+		<tr>
+			<th scope="row">next_event()</th>
+			<td>-</td>
+			<td>object - the next event object</td>
+		</tr>
+		<tr>
+			<th scope="row">time_to_next()</th>
+			<td>-</td>
+			<td>Number - time in milliseconds until the next event</td>
+		</tr>
+	</tbody>
+</table>
+
+
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="waiter.js"></script>
+<script>
+/* demo code */
+
+$(function() {
+
+    // build debug interface
+    $('body').append('<h2>Some debug events</h2>\
+                    <table border="1" width="100%">\
+                        <thead>\
+                        <tr>\
+                            <th width="50%" scope="col">Triggers</th>\
+                            <th width="50%" scope="col">Output</th>\
+                        </thead>\
+                        <tbody>\
+                            <tr>\
+                               <td valign="top"><ul id="debug_links"></ul></td>\
+                               <td valign="top" id="output"></td>\
+                            </tr>\
+                            </tbody>\
+                        </table>');
+
+    var demo_delays = [ 1, 5, 10, 15 ];
+    var $debug_tools = $('#debug_links');
+    var h = '';
+    for (demo in demo_delays) {
+        var sec = demo_delays[demo];
+        h += '<li><a href="#" data-delay="'+(sec*1000)+'">Event ' + (parseInt(demo) + 1) + ' in '+ sec +' secs</a></li>';
+    }
+    $debug_tools.append(h);
+    
+    // just throw our test object in global scope, it's a demo! besides...
+    // I reckon I could take Doug Crockford if he came for me...
+	testQ = new Waiter();
+
+	$('#debug_links a').click(function() {
+		var delay = $(this).attr('data-delay'),
+		name = $(this).text(),
+		delay = parseInt(delay),
+		callback = function(name, data) {
+			var h = $('#output').html() + name + " - " + new Date().toString() + "<br>";
+			$('#output').html(h);
+		}
+		testQ.add_event(delay, callback, name);
+		return false;
+	});
+});
+
+
+</script>
+
+
+
+</body>
+</html>

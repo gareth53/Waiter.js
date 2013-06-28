@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Waiter.js Tests</title>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
+  <script src="waiter.js"></script>
+<script>
+  test("add_event", function() {
+
+      var queue = new Waiter();
+
+      // add an event
+      queue.add_event(10000, function(){}, "test1");
+      equal(queue._q.length, 1, "add an event");
+
+      // try to add an event in the past
+      queue.add_event(-1, function(){}, "test2");
+      equal(queue._q.length, 1, "events in the past not added");
+
+      // test failure
+      var error;
+        try {
+            queue.add_event("poop", function(){}, "test3");
+        }
+        catch(e) {
+            error = e.text;
+        }
+      equal(true, true, "events in the past not added");
+     });
+
+  test("testing the callback", function() {
+      var queue = new Waiter();
+
+      // test callback
+      var testName = "test4";
+      var testData = {
+          temp: 4
+      }
+      queue.add_event(1, function(name, data){
+            window.temp1 = name;
+            window.temp2 = data
+        }, testName, testData);
+
+      equal(this.testName, window.temp1, "name available in callback");
+      equal(this.testData, window.temp2, "data available in callback");
+  });
+
+  test("cancel_event", function() {
+      var queue = new Waiter();
+      // test event cancellation
+      var len = queue._q.length;
+      var testName = "test5";
+      queue.add_event(10000, function(){}, testName);
+
+      equal(queue._q.length, len + 1, "event added");
+      queue.cancel_event(testName);
+      equal(queue._q.length, len, "event cancelled");
+  });
+
+  test("time_to_next", function() {
+      var queue = new Waiter();
+      // create a new event and test the delay == (ish) to the number returned
+      var delay = 2000;
+      queue.add_event(delay, function(){}, "test6");
+      var next = queue.time_to_next();
+      // test it's a number
+      ok(next <= delay, "time_to_next returns a correct number")
+  });
+
+  test("time_to_next returns undefined", function() {
+      var queue = new Waiter();
+      // time_to_next returns undefined with no events in queue
+      equal(typeof queue.time_to_next(), "undefined", "time_to_next() returns undefined with no events in the queue")
+
+  });
+
+  test("events_in_queue", function() {
+      var queue = new Waiter();
+
+      // test get_event_names
+      var list = queue.events_in_queue();
+      // it returns an array?
+      equal(list.constructor.name, "Array", "get_event_list returns an array")
+
+      // loop thru the array, cancel all events
+      for (var li in list) {
+          queue.cancel_event(list[li]);
+      }
+      // does it return an empty array?
+      var list = queue.events_in_queue();
+      equal(list.constructor.name, "Array", "get_event_list returns empty array with no events in the queue")
+      equal(list.length, 0, "get_event_list returns empty array with no events in the queue")
+  });
+
+  test("having multiple Waiters", function() {
+      var queue = new Waiter();
+      var queue2 = Waiter();
+
+      queue.add_event(1000, function(){}, "same_name");
+      queue2.add_event(1000, function(){}, "same_name");
+
+      equal(queue.events_in_queue().length, 1, "multiple queues can co-exist")
+      equal(queue2.events_in_queue().length, 1, "multiple queues can co-exist")
+  });
+
+
+  test("events are sorted", function() {
+      var queue = new Waiter();
+
+      queue.add_event(5000, function(){}, "evnt1");
+      queue.add_event(2000, function(){}, "evnt2");
+      queue.add_event(1000, function(){}, "evnt3");
+      
+      equal(queue.events_in_queue()[0], "evnt3", "Queue sorted according to time")
+      equal(queue.events_in_queue()[1], "evnt2", "Queue sorted according to time")
+      equal(queue.events_in_queue()[2], "evnt1", "Queue sorted according to time")
+  });
+
+
+</script>
+</body>
+</html>
