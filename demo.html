@@ -23,7 +23,7 @@ queue.add_to_q("event2", 5000, function() {<br>
 });<br><br>
 
 queue.add_to_q("event3", 12000, function() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;console.log("This event wil be cancelled")<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log("This event will be cancelled")<br>
 });<br><br>
 
 queue.cancel_event("event3");
@@ -41,10 +41,10 @@ queue.cancel_event("event3");
 	</thead>
 	<tbody>
 		<tr>
-			<th scope="row">add_event(time, callback, name, data)</th>
+			<th scope="row">add_event(delay, callback, name, data)</th>
 			<td>
 			    <ul>
-				    <li>time - time in milliseconds since 1 Jan, 1970 UTC</li>
+				    <li>delay - time in milliseconds from now that the function is to be called. Must be a positive number, floating point numbers are rounded down</li>
     				<li>callback - function that gets called at the given time. the event 'name' and data are provided as args when the function is invoked</li>
     				<li>name (optional) - a string name for the event</li>
     				<li>data (optional) - optional data to be used in the callback function</li>
@@ -61,11 +61,6 @@ queue.cancel_event("event3");
 			<th scope="row">events_in_queue()</th>
 			<td>-</td>
 			<td>Array - list of names of events in queue</td>
-		</tr>
-		<tr>
-			<th scope="row">next_event()</th>
-			<td>-</td>
-			<td>object - the next event object</td>
 		</tr>
 		<tr>
 			<th scope="row">time_to_next()</th>
