@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>Waiter.js Tests</title>
-  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css">
+  <link rel="stylesheet" href="assets/qunit-1.11.0.css">
 </head>
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
-  <script src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
-  <script src="waiter.js"></script>
+  <script src="assets/qunit-1.11.0.js"></script>
+  <script src="assets/sinon-1.7.3.js"></script>
+  <script src="../waiter.js"></script>
 <script>
   test("add_event", function() {
 
@@ -109,7 +110,6 @@
       equal(queue2.events_in_queue().length, 1, "multiple queues can co-exist")
   });
 
-
   test("events are sorted", function() {
       var queue = new Waiter();
 
@@ -121,6 +121,29 @@
       equal(queue.events_in_queue()[1], "evnt2", "Queue sorted according to time")
       equal(queue.events_in_queue()[2], "evnt1", "Queue sorted according to time")
   });
+
+
+  test("typical use-case", function() {
+      var queue = new Waiter();
+      var clock = sinon.useFakeTimers();
+
+      global_var = null;
+      
+      var limit = 10;
+      
+      for (var i=1; i<limit ; i++) {
+          queue.add_event(i * 1000, function(){ global_var = i; }, "evnt" + i);
+      }
+      
+      for (var i=1; i<limit ; i++) {
+          clock.tick(queue.time_to_next() + 1);
+          equal(global_var, i, "Function that re-defines global_var has fired")
+      }
+      delete global_var;
+      var clock = sinon.restore();
+
+  });
+
 
 
 </script>

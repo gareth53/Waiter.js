@@ -9,6 +9,6 @@ Websocket events were almost live, the radio stream was subject to delays in enc
 
 Additionally, we'd be receiving WebSocket data about 'pending' events that we'd need to delay dependent on a timestamp in the event data. Sounds fun doesn't it? ;)
 
-Rather than habing multiple timeouts initialised everytime we got a websocket event, I wrote this simple JavaScript queue.
+Rather than having multiple timeouts initialised every time we got a websocket event, I wrote this simple JavaScript queue.
 
 It started life as a gist: https://gist.github.com/gareth53/5795304 but once I wrote some tests and a demo it graduated here.
