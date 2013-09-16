@@ -18,7 +18,7 @@ Waiter = function() {
             adds a timed event to the queue
             sorts the queue
             ensures the timeout is reset
-            returns true of an event is scheduled, returns false if not
+            returns true if an event is scheduled, returns false if not
             */
             // verify arguments
             if (typeof callback !== "function") {
@@ -91,7 +91,7 @@ Waiter = function() {
                     deleted = i;
                 }
             }
-            // was it the first event? reset the timeout
+            // was it the first event? if so, reset the timeout
             if (i==0) {
                 this._reset_tmt();
                 return true;
